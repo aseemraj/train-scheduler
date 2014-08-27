@@ -36,6 +36,8 @@ class MainWin(QtGui.QWidget):
         qbtn.clicked.connect(QtCore.QCoreApplication.instance().quit)
         qbtn.move(WIDTH-200, HEIGHT-70)
 
+        #Warning Label
+
         self.show()
         
     def closeEvent(self, event):
