@@ -4,7 +4,7 @@ from PyQt4 import QtCore, QtGui
 WIDTH = 1300
 HEIGHT = 700
 
-class MainWin(QtGui.QWidget):
+class MainWin(QtGui.QMainWindow):
     
     def __init__(self):
         super(MainWin, self).__init__()
@@ -12,7 +12,15 @@ class MainWin(QtGui.QWidget):
         self.initUI()
         
     def initUI(self):
-        
+        exitAction = QtGui.QAction('&Quit', self)
+        exitAction.setShortcut('Ctrl+Q')
+        exitAction.setStatusTip('Quit application')
+        exitAction.triggered.connect(QtGui.qApp.quit)
+        self.statusBar().showMessage('Ready')
+        menubar = self.menuBar()
+        mainmenu = menubar.addMenu('&Control')
+        mainmenu.addAction(exitAction)
+
         self.resize(WIDTH, HEIGHT)
         self.setWindowTitle('Train Traffic Simulator')
 
