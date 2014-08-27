@@ -23,6 +23,7 @@ class MainWin(QtGui.QMainWindow):
 
         self.resize(WIDTH, HEIGHT)
         self.setWindowTitle('Train Traffic Simulator')
+        self.center()
 
         # Time slider
         slider = QtGui.QSlider(1, self)
@@ -58,6 +59,13 @@ class MainWin(QtGui.QMainWindow):
             event.accept()
         else:
             event.ignore()
+
+    def center(self):
+        
+        qr = self.frameGeometry()
+        cp = QtGui.QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
 
 def main():
     app = QtGui.QApplication(sys.argv)
