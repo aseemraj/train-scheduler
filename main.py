@@ -1,9 +1,6 @@
 import sys
 from PyQt4 import QtCore, QtGui
 
-WIDTH = 1300
-HEIGHT = 700
-
 class MainWin(QtGui.QMainWindow):
     
     def __init__(self):
@@ -14,6 +11,7 @@ class MainWin(QtGui.QMainWindow):
     def initUI(self):
         exitAction = QtGui.QAction('&Quit', self)
         exitAction.setShortcut('Ctrl+Q')
+        screen = QtGui.QDesktopWidget().screenGeometry()
         exitAction.setStatusTip('Quit application')
         exitAction.triggered.connect(QtGui.qApp.quit)
         self.statusBar().showMessage('Ready')
@@ -21,7 +19,7 @@ class MainWin(QtGui.QMainWindow):
         mainmenu = menubar.addMenu('&Control')
         mainmenu.addAction(exitAction)
 
-        self.resize(WIDTH, HEIGHT)
+        self.resize(screen.width(), screen.height())
         self.setWindowTitle('Train Traffic Simulator')
         self.center()
 
@@ -43,7 +41,7 @@ class MainWin(QtGui.QMainWindow):
         qbtn.setToolTip('Quit Application')
         qbtn.resize(sbtn.sizeHint())
         qbtn.clicked.connect(QtCore.QCoreApplication.instance().quit)
-        qbtn.move(WIDTH-200, HEIGHT-70)
+        qbtn.move(screen.width()-170, screen.height()-120)
 
         #Warning Label
 
@@ -70,9 +68,6 @@ class MainWin(QtGui.QMainWindow):
 def main():
     app = QtGui.QApplication(sys.argv)
     
-    # create the screen object
-    screen = QtGui.QDesktopWidget().screenGeometry()
-
     w = MainWin()
 
     sys.exit(app.exec_())
