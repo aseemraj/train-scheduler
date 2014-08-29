@@ -106,6 +106,7 @@ class MainWin(QtGui.QMainWindow):
         deletePlatformButton.move(screen.width()-200, screen.height()-200)
 
         addTrainButton.clicked.connect(lambda: self.showAddTrainDialog())
+        deleteTrainButton.clicked.connect(lambda: self.showDeleteTrainDialog())
 
         #Adding Train To Table
         view = QTableView(self)
@@ -129,6 +130,11 @@ class MainWin(QtGui.QMainWindow):
     def showAddTrainDialog(self):
 
         AddTrainDialog(self).showDialog()
+        return
+
+    def showDeleteTrainDialog(self):
+
+        DeleteTrainDialog(self).showDialog()
         return
 
     def paintEvent(self, e):
@@ -194,10 +200,7 @@ class AddTrainDialog(QtGui.QDialog):
         buttonBox = QtGui.QDialogButtonBox()
         buttonBox.addButton(QtGui.QDialogButtonBox.Ok)
         buttonBox.addButton(QtGui.QDialogButtonBox.Cancel)
-        buttonBox.centerButtons
-
-
-
+        buttonBox.centerButtons()
 
         layout.addRow("Train Number",trainNumber)
         layout.addRow("Train Name",trainName)
@@ -208,6 +211,36 @@ class AddTrainDialog(QtGui.QDialog):
         dialog = AddTrainDialog(parent)
         result = dialog.exec_()
         return
+
+class DeleteTrainDialog(QtGui.QDialog):
+
+    def __init__(self, parent=None):
+
+        super(DeleteTrainDialog,self).__init__(parent)
+
+        layout = QtGui.QFormLayout(self)
+
+        dropDownList = QtGui.QComboBox()
+
+        trainList = ["12480","12481","12484"]
+
+        dropDownList.addItems(trainList)
+
+        buttonBox = QtGui.QDialogButtonBox()
+        buttonBox.addButton(QtGui.QDialogButtonBox.Ok)
+        buttonBox.addButton(QtGui.QDialogButtonBox.Cancel)
+        buttonBox.centerButtons
+
+        layout.addRow(dropDownList)
+        layout.addRow(buttonBox)
+
+    def showDialog(parent = None):
+
+        dialog = DeleteTrainDialog(parent)
+        result = dialog.exec_()
+        return
+
+
 
 def main():
     app = QtGui.QApplication(sys.argv)
