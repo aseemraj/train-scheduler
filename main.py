@@ -15,7 +15,7 @@ class TrainTableModel(QtCore.QAbstractTableModel):
     """Model class that drives the population of tabular display"""
     def __init__(self):
         super(TrainTableModel,self).__init__()
-        self.headers = ['Train Code','Arrival Time','Departure Time','PlatForm No']
+        self.headers = ['Code','Arrival','Departure','Pf']
         self.train  = []
  
     def rowCount(self,index=QtCore.QModelIndex()):
@@ -98,7 +98,7 @@ class MainWin(QtGui.QMainWindow):
         view = QTableView(self)
         tableData = TrainTableModel()
         view.setModel(tableData)
-        view.setGeometry(screen.width()-460,0,400,600)
+        view.setGeometry(screen.width()-460,0,460,600)
  
         tableData.addTrain(TrainInfo('12480', '11:00 AM', '11:10 AM','4'))
         tableData.addTrain(TrainInfo('12480', '11:00 AM', '11:10 AM','4'))
