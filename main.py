@@ -1,10 +1,61 @@
 import sys
 from PyQt4 import QtCore, QtGui
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+
+class TrainInfo(object):
+    """Name of the train along with his trainCode, Arrival Time Departure Time"""
+    def __init__(self,trainCode,arrivalTime,departureTime,platformNo):
+        self.trainCode = trainCode
+        self.arrivalTime = arrivalTime
+        self.departureTime = departureTime
+        self.platformNo = platformNo
+
+class TrainTableModel(QtCore.QAbstractTableModel):
+    """Model class that drives the population of tabular display"""
+    def __init__(self):
+        super(TrainTableModel,self).__init__()
+        self.headers = ['Train Code','Arrival Time','Departure Time','PlatForm No']
+        self.train  = []
+ 
+    def rowCount(self,index=QtCore.QModelIndex()):
+        return len(self.train)
+ 
+    def addTrain(self,train):
+        self.beginResetModel()
+        self.train.append(train)
+        self.endResetModel()
+ 
+    def columnCount(self,index=QtCore.QModelIndex()):
+        return len(self.headers)
+ 
+    def data(self,index,role=Qt.DisplayRole):
+        col = index.column()
+        train = self.train[index.row()]
+        if role == Qt.DisplayRole:
+            if col == 0:
+                return QVariant(train.trainCode)
+            elif col == 1:
+                return QVariant(train.arrivalTime)
+            elif col == 2:
+                return QVariant(train.departureTime)
+            elif col == 3:
+                return QVariant(train.platformNo)
+            return QVariant()
+ 
+    def headerData(self,section,orientation,role=Qt.DisplayRole):
+        if role != Qt.DisplayRole:
+            return QVariant()
+ 
+        if orientation == Qt.Horizontal:
+            return QVariant(self.headers[section])
+        return QVariant(int(section + 1))
 
 class MainWin(QtGui.QMainWindow):
     
     def __init__(self):
         super(MainWin, self).__init__()
+
         
         self.initUI()
         
@@ -43,7 +94,15 @@ class MainWin(QtGui.QMainWindow):
         qbtn.clicked.connect(QtCore.QCoreApplication.instance().quit)
         qbtn.move(screen.width()-170, screen.height()-120)
 
-        #Warning Label
+        #Adding Train To Table
+        view = QTableView(self)
+        tableData = TrainTableModel()
+        view.setModel(tableData)
+        view.setGeometry(screen.width()-460,0,400,600)
+ 
+        tableData.addTrain(TrainInfo('12480', '11:00 AM', '11:10 AM','4'))
+        tableData.addTrain(TrainInfo('12480', '11:00 AM', '11:10 AM','4'))
+        tableData.addTrain(TrainInfo('12480', '11:00 AM', '11:10 AM','4'))
 
         self.show()
         
