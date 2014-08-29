@@ -106,6 +106,7 @@ class MainWin(QtGui.QMainWindow):
         deletePlatformButton.move(screen.width()-200, screen.height()-200)
 
         addTrainButton.clicked.connect(lambda: self.showAddTrainDialog())
+        addPlatformButton.clicked.connect(lambda: self.showAddPlatformDialog())
         deleteTrainButton.clicked.connect(lambda: self.showDeleteTrainDialog())
 
         #Adding Train To Table
@@ -131,6 +132,11 @@ class MainWin(QtGui.QMainWindow):
 
         AddTrainDialog(self).showDialog()
         return
+
+    def showAddPlatformDialog(self):
+
+        AddPlatformDialog(self).showDialog()
+        return    
 
     def showDeleteTrainDialog(self):
 
@@ -237,6 +243,31 @@ class DeleteTrainDialog(QtGui.QDialog):
     def showDialog(parent = None):
 
         dialog = DeleteTrainDialog(parent)
+        result = dialog.exec_()
+        return
+
+class AddPlatformDialog(QtGui.QDialog):
+
+    def __init__(self, parent=None):
+
+        super(AddPlatformDialog,self).__init__(parent)
+
+        layout = QtGui.QFormLayout(self)
+
+        platformNumber = QtGui.QLineEdit()
+        #trainName = QtGui.QLineEdit()
+
+        buttonBox = QtGui.QDialogButtonBox()
+        buttonBox.addButton(QtGui.QDialogButtonBox.Ok)
+        buttonBox.addButton(QtGui.QDialogButtonBox.Cancel)
+        buttonBox.centerButtons()
+
+        layout.addRow("Platform Number",platformNumber)
+        layout.addRow(buttonBox)
+
+    def showDialog(parent = None):
+
+        dialog = AddPlatformDialog(parent)
         result = dialog.exec_()
         return
 
