@@ -117,6 +117,13 @@ class MainWin(QtGui.QMainWindow):
         tableData.addTrain(TrainInfo('12480', '11:00 AM', '11:10 AM','4'))
         tableData.addTrain(TrainInfo('12480', '11:00 AM', '11:10 AM','4'))
 
+        # Platform labels
+        it = 0
+        while it<16:
+            lbl = QtGui.QLabel('PF '+str(it+1)+'/'+str(it+2), self)
+            lbl.move(30, 230+it*30)
+            it = it+2
+
         self.show()
 
     def showAddTrainDialog(self):
@@ -135,13 +142,12 @@ class MainWin(QtGui.QMainWindow):
         color = QtGui.QColor(0, 0, 0)
         color.setNamedColor('#d4d4d4')
         qp.setPen(color)
-
         for i in range(8):
             qp.setBrush(QtGui.QColor(50, 50, 50))
             qp.drawRect(100, 230+i*60, 600, 15)
             qp.setBrush(QtGui.QColor(20, 20, 20))
             qp.drawRect(100, 230+i*60+15, 600, 15)
-    
+
     def drawOuterlines(self, qp):
         color = QtGui.QColor(0, 100, 0)
         color.setNamedColor('#d4d4d4')
@@ -152,19 +158,23 @@ class MainWin(QtGui.QMainWindow):
         for i in range(5):
             qp.setBrush(QtGui.QColor(50, 100, 50))
             qp.drawRect(550, 130+i*10, 200, 5)
+
+    def drawText(self, event, qp):
+      
+        qp.setPen(QtGui.QColor(168, 34, 3))
+        qp.setFont(QtGui.QFont('Decorative', 10))
+        qp.drawText(event.rect(), QtCore.Qt.AlignCenter, self.text)
         
     def closeEvent(self, event):
         reply = QtGui.QMessageBox.question(self, 'Confirmation',
             "Are you sure to quit?", QtGui.QMessageBox.Yes | 
             QtGui.QMessageBox.No, QtGui.QMessageBox.No)
-
         if reply == QtGui.QMessageBox.Yes:
             event.accept()
         else:
             event.ignore()
 
     def center(self):
-        
         qr = self.frameGeometry()
         cp = QtGui.QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
