@@ -94,6 +94,19 @@ class MainWin(QtGui.QMainWindow):
         qbtn.clicked.connect(QtCore.QCoreApplication.instance().quit)
         qbtn.move(screen.width()-200, screen.height()-120)
 
+        #User Control Buttons
+        addTrainButton = QtGui.QPushButton("Add Train", self)
+        deleteTrainButton = QtGui.QPushButton("Delete Train", self)
+        addPlatformButton = QtGui.QPushButton("Add Platform", self)
+        deletePlatformButton = QtGui.QPushButton("Delete Platform", self)
+
+        addTrainButton.move(screen.width()-350, screen.height()-250)
+        deleteTrainButton.move(screen.width()-200, screen.height()-250)
+        addPlatformButton.move(screen.width()-350, screen.height()-200)
+        deletePlatformButton.move(screen.width()-200, screen.height()-200)
+
+        addTrainButton.clicked.connect(lambda: self.showAddTrainDialog())
+
         #Adding Train To Table
         view = QTableView(self)
         tableData = TrainTableModel()
@@ -105,6 +118,11 @@ class MainWin(QtGui.QMainWindow):
         tableData.addTrain(TrainInfo('12480', '11:00 AM', '11:10 AM','4'))
 
         self.show()
+
+    def showAddTrainDialog(self):
+
+        AddTrainDialog(self).showDialog()
+        return
 
     def paintEvent(self, e):
         qp = QtGui.QPainter()
@@ -151,6 +169,35 @@ class MainWin(QtGui.QMainWindow):
         cp = QtGui.QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
+
+class AddTrainDialog(QtGui.QDialog):
+
+    def __init__(self, parent=None):
+
+        super(AddTrainDialog,self).__init__(parent)
+
+        layout = QtGui.QFormLayout(self)
+
+        trainNumber = QtGui.QLineEdit()
+        trainName = QtGui.QLineEdit()
+
+        buttonBox = QtGui.QDialogButtonBox()
+        buttonBox.addButton(QtGui.QDialogButtonBox.Ok)
+        buttonBox.addButton(QtGui.QDialogButtonBox.Cancel)
+        buttonBox.centerButtons
+
+
+
+
+        layout.addRow("Train Number",trainNumber)
+        layout.addRow("Train Name",trainName)
+        layout.addRow(buttonBox)
+
+    def showDialog(parent = None):
+
+        dialog = AddTrainDialog(parent)
+        result = dialog.exec_()
+        return
 
 def main():
     app = QtGui.QApplication(sys.argv)
