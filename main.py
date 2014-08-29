@@ -1,4 +1,4 @@
-import sys
+import sys, random
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -92,7 +92,7 @@ class MainWin(QtGui.QMainWindow):
         qbtn.setToolTip('Quit Application')
         qbtn.resize(sbtn.sizeHint())
         qbtn.clicked.connect(QtCore.QCoreApplication.instance().quit)
-        qbtn.move(screen.width()-170, screen.height()-120)
+        qbtn.move(screen.width()-200, screen.height()-120)
 
         #Adding Train To Table
         view = QTableView(self)
@@ -105,6 +105,38 @@ class MainWin(QtGui.QMainWindow):
         tableData.addTrain(TrainInfo('12480', '11:00 AM', '11:10 AM','4'))
 
         self.show()
+
+    def paintEvent(self, e):
+        qp = QtGui.QPainter()
+        qp.begin(self)
+        self.drawPlatforms(qp)
+        self.drawOuterlines(qp)
+        qp.end()
+        
+    def drawPlatforms(self, qp):
+        color = QtGui.QColor(0, 0, 0)
+        color.setNamedColor('#d4d4d4')
+        qp.setPen(color)
+
+        for i in range(8):
+            qp.setBrush(QtGui.QColor(50, 50, 50))
+            qp.drawRect(100, 230+i*60, 600, 15)
+            qp.setBrush(QtGui.QColor(20, 20, 20))
+            qp.drawRect(100, 230+i*60+15, 600, 15)
+    
+    def drawOuterlines(self, qp):
+        color = QtGui.QColor(0, 100, 0)
+        color.setNamedColor('#d4d4d4')
+        qp.setPen(color)
+
+        for i in range(5):
+            qp.setBrush(QtGui.QColor(50, 100, 50))
+            qp.drawRect(50, 130+i*10, 200, 5)
+        for i in range(5):
+            qp.setBrush(QtGui.QColor(50, 100, 50))
+            qp.drawRect(550, 130+i*10, 200, 5)
+            # qp.setBrush(QtGui.QColor(20, 20, 20))
+            # qp.drawRect(100, 130+i*10+5, 600, 5)
         
     def closeEvent(self, event):
         
