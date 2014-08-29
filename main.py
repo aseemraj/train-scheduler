@@ -98,7 +98,7 @@ class MainWin(QtGui.QMainWindow):
         view = QTableView(self)
         tableData = TrainTableModel()
         view.setModel(tableData)
-        view.setGeometry(screen.width()-460,0,460,600)
+        view.setGeometry(screen.width()-460,0,460,400)
  
         tableData.addTrain(TrainInfo('12480', '11:00 AM', '11:10 AM','4'))
         tableData.addTrain(TrainInfo('12480', '11:00 AM', '11:10 AM','4'))
@@ -128,18 +128,14 @@ class MainWin(QtGui.QMainWindow):
         color = QtGui.QColor(0, 100, 0)
         color.setNamedColor('#d4d4d4')
         qp.setPen(color)
-
         for i in range(5):
             qp.setBrush(QtGui.QColor(50, 100, 50))
             qp.drawRect(50, 130+i*10, 200, 5)
         for i in range(5):
             qp.setBrush(QtGui.QColor(50, 100, 50))
             qp.drawRect(550, 130+i*10, 200, 5)
-            # qp.setBrush(QtGui.QColor(20, 20, 20))
-            # qp.drawRect(100, 130+i*10+5, 600, 5)
         
     def closeEvent(self, event):
-        
         reply = QtGui.QMessageBox.question(self, 'Confirmation',
             "Are you sure to quit?", QtGui.QMessageBox.Yes | 
             QtGui.QMessageBox.No, QtGui.QMessageBox.No)
