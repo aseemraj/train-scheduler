@@ -55,8 +55,6 @@ class MainWin(QtGui.QMainWindow):
     
     def __init__(self):
         super(MainWin, self).__init__()
-
-        
         self.initUI()
         
     def initUI(self):
@@ -90,15 +88,15 @@ class MainWin(QtGui.QMainWindow):
         # Quit button
         qbtn = QtGui.QPushButton('Quit', self)
         qbtn.setToolTip('Quit Application')
-        qbtn.resize(sbtn.sizeHint())
+        qbtn.resize(qbtn.sizeHint())
         qbtn.clicked.connect(QtCore.QCoreApplication.instance().quit)
         qbtn.move(screen.width()-200, screen.height()-120)
 
         #User Control Buttons
         addTrainButton = QtGui.QPushButton("Add Train", self)
         deleteTrainButton = QtGui.QPushButton("Delete Train", self)
-        addPlatformButton = QtGui.QPushButton("Add Platform", self)
-        deletePlatformButton = QtGui.QPushButton("Delete Platform", self)
+        addPlatformButton = QtGui.QPushButton("Add Pf", self)
+        deletePlatformButton = QtGui.QPushButton("Delete Pf", self)
 
         addTrainButton.move(screen.width()-350, screen.height()-250)
         deleteTrainButton.move(screen.width()-200, screen.height()-250)
@@ -113,9 +111,9 @@ class MainWin(QtGui.QMainWindow):
         view.setModel(tableData)
         view.setGeometry(screen.width()-460,0,460,400)
  
-        tableData.addTrain(TrainInfo('12480', '11:00 AM', '11:10 AM','4'))
-        tableData.addTrain(TrainInfo('12480', '11:00 AM', '11:10 AM','4'))
-        tableData.addTrain(TrainInfo('12480', '11:00 AM', '11:10 AM','4'))
+        tableData.addTrain(TrainInfo('12480', '11:00', '11:10','4'))
+        tableData.addTrain(TrainInfo('12621', '20:10', '20:30','3'))
+        tableData.addTrain(TrainInfo('12480', '21:35', '21:40','6'))
 
         # Platform labels
         it = 0
@@ -123,11 +121,10 @@ class MainWin(QtGui.QMainWindow):
             lbl = QtGui.QLabel('PF '+str(it+1)+'/'+str(it+2), self)
             lbl.move(30, 230+it*30)
             it = it+2
-
+            
         self.show()
 
     def showAddTrainDialog(self):
-
         AddTrainDialog(self).showDialog()
         return
 
@@ -147,6 +144,11 @@ class MainWin(QtGui.QMainWindow):
             qp.drawRect(100, 230+i*60, 600, 15)
             qp.setBrush(QtGui.QColor(20, 20, 20))
             qp.drawRect(100, 230+i*60+15, 600, 15)
+            qbtn = QtGui.QPushButton('Disable', self)
+            qbtn.setToolTip('Quit Application')
+            qbtn.resize(qbtn.sizeHint())
+            qbtn.clicked.connect(QtCore.QCoreApplication.instance().quit)
+            qbtn.move(700, 230+i*60)
 
     def drawOuterlines(self, qp):
         color = QtGui.QColor(0, 100, 0)
