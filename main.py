@@ -257,7 +257,6 @@ class AddPlatformDialog(QtGui.QDialog):
         layout = QtGui.QFormLayout(self)
 
         platformNumber = QtGui.QLineEdit()
-        #trainName = QtGui.QLineEdit()
 
         buttonBox = QtGui.QDialogButtonBox()
         buttonBox.addButton(QtGui.QDialogButtonBox.Ok)
