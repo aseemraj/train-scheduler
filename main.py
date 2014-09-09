@@ -95,17 +95,19 @@ class MainWin(QtGui.QMainWindow):
         #User Control Buttons
         addTrainButton = QtGui.QPushButton("Add Train", self)
         deleteTrainButton = QtGui.QPushButton("Delete Train", self)
-        addPlatformButton = QtGui.QPushButton("Add Pf", self)
-        deletePlatformButton = QtGui.QPushButton("Delete Pf", self)
+        addPlatformButton = QtGui.QPushButton("Add Platform", self)
+        editPlatformButton = QtGui.QPushButton("Edit Platform", self)
 
         addTrainButton.move(screen.width()-350, screen.height()-250)
         deleteTrainButton.move(screen.width()-200, screen.height()-250)
         addPlatformButton.move(screen.width()-350, screen.height()-200)
-        deletePlatformButton.move(screen.width()-200, screen.height()-200)
+        editPlatformButton.move(screen.width()-200, screen.height()-200)
 
         addTrainButton.clicked.connect(lambda: self.showAddTrainDialog())
         addPlatformButton.clicked.connect(lambda: self.showAddPlatformDialog())
         deleteTrainButton.clicked.connect(lambda: self.showDeleteTrainDialog())
+        editPlatformButton.clicked.connect(lambda: self.showEditPlatformDialog())
+
 
         #Adding Train To Table
         view = QTableView(self)
@@ -131,13 +133,15 @@ class MainWin(QtGui.QMainWindow):
         return
 
     def showAddPlatformDialog(self):
-
         AddPlatformDialog(self).showDialog()
         return    
 
     def showDeleteTrainDialog(self):
-
         DeleteTrainDialog(self).showDialog()
+        return
+
+    def showEditPlatformDialog(self):
+        EditPlatformDialog(self).showDialog()
         return
 
     def paintEvent(self, e):
@@ -206,8 +210,11 @@ class AddTrainDialog(QtGui.QDialog):
         trainName = QtGui.QLineEdit()
 
         buttonBox = QtGui.QDialogButtonBox()
-        buttonBox.addButton(QtGui.QDialogButtonBox.Ok)
-        buttonBox.addButton(QtGui.QDialogButtonBox.Cancel)
+
+        buttonOk = buttonBox.addButton("Add Train",QtGui.QDialogButtonBox.AcceptRole)
+        buttonCancel = buttonBox.addButton("Cancel",QtGui.QDialogButtonBox.RejectRole)
+        buttonOk.clicked.connect(lambda: self.buttonClickedOk())
+        buttonCancel.clicked.connect(lambda: self.buttonClickedCancel())
         buttonBox.centerButtons()
 
         layout.addRow("Train Number",trainNumber)
@@ -218,6 +225,16 @@ class AddTrainDialog(QtGui.QDialog):
 
         dialog = AddTrainDialog(parent)
         result = dialog.exec_()
+        return
+
+    def buttonClickedOk(self):
+        #Do something useful!
+        QtGui.QDialog.accept(self)
+        return
+
+    def buttonClickedCancel(self):
+        #Do something useful!
+        QtGui.QDialog.reject(self)
         return
 
 class DeleteTrainDialog(QtGui.QDialog):
@@ -235,8 +252,10 @@ class DeleteTrainDialog(QtGui.QDialog):
         dropDownList.addItems(trainList)
 
         buttonBox = QtGui.QDialogButtonBox()
-        buttonBox.addButton(QtGui.QDialogButtonBox.Ok)
-        buttonBox.addButton(QtGui.QDialogButtonBox.Cancel)
+        buttonOk = buttonBox.addButton("Delete Train",QtGui.QDialogButtonBox.AcceptRole)
+        buttonCancel = buttonBox.addButton("Cancel",QtGui.QDialogButtonBox.RejectRole)
+        buttonOk.clicked.connect(lambda: self.buttonClickedOk())
+        buttonCancel.clicked.connect(lambda: self.buttonClickedCancel())
         buttonBox.centerButtons
 
         layout.addRow(dropDownList)
@@ -246,6 +265,16 @@ class DeleteTrainDialog(QtGui.QDialog):
 
         dialog = DeleteTrainDialog(parent)
         result = dialog.exec_()
+        return
+
+    def buttonClickedOk(self):
+        #Do something useful!
+        QtGui.QDialog.accept(self)
+        return
+
+    def buttonClickedCancel(self):
+        #Do something useful!
+        QtGui.QDialog.reject(self)
         return
 
 class AddPlatformDialog(QtGui.QDialog):
@@ -259,8 +288,10 @@ class AddPlatformDialog(QtGui.QDialog):
         platformNumber = QtGui.QLineEdit()
 
         buttonBox = QtGui.QDialogButtonBox()
-        buttonBox.addButton(QtGui.QDialogButtonBox.Ok)
-        buttonBox.addButton(QtGui.QDialogButtonBox.Cancel)
+        buttonOk = buttonBox.addButton("Add Platform",QtGui.QDialogButtonBox.AcceptRole)
+        buttonCancel = buttonBox.addButton("Cancel",QtGui.QDialogButtonBox.RejectRole)
+        buttonOk.clicked.connect(lambda: self.buttonClickedOk())
+        buttonCancel.clicked.connect(lambda: self.buttonClickedCancel())
         buttonBox.centerButtons()
 
         layout.addRow("Platform Number",platformNumber)
@@ -271,6 +302,55 @@ class AddPlatformDialog(QtGui.QDialog):
         dialog = AddPlatformDialog(parent)
         result = dialog.exec_()
         return
+
+    def buttonClickedOk(self):
+        #Do something useful!
+        QtGui.QDialog.accept(self)
+        return
+
+    def buttonClickedCancel(self):
+        #Do something useful!
+        QtGui.QDialog.reject(self)
+        return
+
+class EditPlatformDialog(QtGui.QDialog):
+
+    def __init__(self,parent=None):
+        super(EditPlatformDialog,self).__init__(parent)
+
+        layout = QtGui.QFormLayout(self)
+
+        platformList = []
+        for i in range(1,9):
+            platformList.append(QtGui.QCheckBox("Platform "+str(i)))
+            layout.addRow(platformList[i-1])
+
+        buttonBox = QtGui.QDialogButtonBox()
+        buttonOk = buttonBox.addButton("Make Changes",QtGui.QDialogButtonBox.AcceptRole)
+        buttonCancel = buttonBox.addButton("Cancel",QtGui.QDialogButtonBox.RejectRole)
+        buttonOk.clicked.connect(lambda: self.buttonClickedOk())
+        buttonCancel.clicked.connect(lambda: self.buttonClickedCancel())
+        buttonBox.centerButtons()
+
+        layout.addRow(buttonBox)
+
+    def showDialog(parent = None):
+
+        dialog = EditPlatformDialog(parent)
+        result = dialog.exec_()
+        return
+
+    def buttonClickedOk(self):
+        #Do something useful!
+        QtGui.QDialog.accept(self)
+        return
+
+    def buttonClickedCancel(self):
+        #Do something useful!
+        QtGui.QDialog.reject(self)
+        return
+
+
 
 
 
