@@ -2,6 +2,7 @@ import sys, random
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from train import *
 
 class TrainInfo(object):
     """Name of the train along with his trainCode, Arrival Time Departure Time"""
@@ -128,7 +129,8 @@ class MainWin(QtGui.QMainWindow):
             lbl = QtGui.QLabel('PF '+str(it+1)+'/'+str(it+2), self)
             lbl.move(30, 230+it*30)
             it = it+2
-            
+        
+
         self.show()
 
     def showAddTrainDialog(self):
@@ -156,6 +158,14 @@ class MainWin(QtGui.QMainWindow):
         qp.begin(self)
         self.drawPlatforms(qp)
         self.drawOuterlines(qp)
+        
+        trains=[]
+        for i in range(5):
+            trains.append(Train(1, 2, 3, 4))
+            trains[i].x = 100
+            trains[i].y = i*60 + 260
+            trains[i].draw(qp)
+
         qp.end()
         
     def drawPlatforms(self, qp):
