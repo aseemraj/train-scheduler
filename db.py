@@ -14,8 +14,8 @@ outer_lines = db.outer_lines
 
 print db.collection_names()
 
-def addTrain(name,code,arrival_time,direction,status):
-    train = {"name":name,"code":code,"arrival_time":arrival_time,"direction":direction,"status":status}
+def addTrain(name,code,arrival_time,direction,status,type):
+    train = {"name":name,"code":code,"arrival_time":arrival_time,"direction":direction,"status":status,"type":type}
     trains.insert(train)
 
 def getTrainList():
