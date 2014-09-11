@@ -19,6 +19,7 @@ class Train(object):
         self.x = 0
         self.y = 0
         self.bogies = bogies
+        self.tempi = 0
 
     def draw(self, qp):
         for i in range(self.bogies):
@@ -31,8 +32,11 @@ class Train(object):
 
     def update(self):
         """ Called each frame. """
+        if self.tempi%100==0:
+            self.vel = -1*self.vel
         self.x += self.vel
-        if self.vel>0:
-            self.bogies = int(bogies + 1 - math.ceil((self.x-200)/bogielength))
+        self.tempi += 1
+        # if self.vel>0:
+        #     self.bogies = int(bogies + 1 - math.ceil((self.x-200)/bogielength))
         # elif self.vel<0:
         #     self.bogies = 20 - (self.x+100)/bogielength

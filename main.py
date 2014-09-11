@@ -9,7 +9,54 @@ from platform import *
 from outerline import *
 from time import strftime
 
-trains = []
+class TrainInfo(object):
+    """Name of the train along with his trainCode, Arrival Time Departure Time"""
+    def __init__(self,trainCode,arrivalTime,departureTime,platformNo):
+        self.trainCode = trainCode
+        self.arrivalTime = arrivalTime
+        self.departureTime = departureTime
+        self.platformNo = platformNo
+
+class TrainTableModel(QtCore.QAbstractTableModel):
+    """Model class that drives the population of tabular display"""
+    def __init__(self):
+        super(TrainTableModel,self).__init__()
+        self.headers = ['Code','Arrival','Departure','Pf']
+        self.train  = []
+ 
+    def rowCount(self,index=QtCore.QModelIndex()):
+        return len(self.train)
+ 
+    def addTrain(self,train):
+        self.beginResetModel()
+        self.train.append(train)
+        self.endResetModel()
+ 
+    def columnCount(self,index=QtCore.QModelIndex()):
+        return len(self.headers)
+ 
+    def data(self,index,role=Qt.DisplayRole):
+        col = index.column()
+        train = self.train[index.row()]
+        if role == Qt.DisplayRole:
+            if col == 0:
+                return QVariant(train.trainCode)
+            elif col == 1:
+                return QVariant(train.arrivalTime)
+            elif col == 2:
+                return QVariant(train.departureTime)
+            elif col == 3:
+                return QVariant(train.platformNo)
+            return QVariant()
+ 
+    def headerData(self,section,orientation,role=Qt.DisplayRole):
+        if role != Qt.DisplayRole:
+            return QVariant()
+ 
+        if orientation == Qt.Horizontal:
+            return QVariant(self.headers[section])
+        return QVariant(int(section + 1))
+
 
 class MainWin(QtGui.QMainWindow):
     
@@ -87,14 +134,11 @@ class MainWin(QtGui.QMainWindow):
 
 
         #Adding Train To Table
-        view = QTableView(self)
-        tableData = TrainTableModel()
-        view.setModel(tableData)
-        view.setGeometry(screen.width()-460,0,460,400)
- 
-        tableData.addTrain(TrainInfo('12480', '11:00', '11:10','4'))
-        tableData.addTrain(TrainInfo('12621', '20:10', '20:30','3'))
-        tableData.addTrain(TrainInfo('12480', '21:35', '21:40','6'))
+        self.view = QTableView(self)
+        self.tableData = TrainTableModel()
+        self.view.setModel(self.tableData)
+        self.view.setGeometry(screen.width()-460,0,460,400)
+        self.editTrainList()
 
         # Platform labels
         it = 0
@@ -128,6 +172,27 @@ class MainWin(QtGui.QMainWindow):
         AddTrainDialog(self).showDialog()
         return
 
+    def editTrainList(self):
+        for train in getTrainList().find():
+            if train["type"]=="Originating" or train["type"]=="Destination":
+                if int(train["arrival_time"].split(':')[1])<45:
+                    departure_time = int(train["arrival_time"].split(':')[1])+15
+                    departure_time = str(train["arrival_time"].split(':')[0])+":"+str(departure_time)
+                else:
+                    departure_hrs = int(train["arrival_time"].split(':')[0])+1
+                    departure_min = int(train["arrival_time"].split(':')[1])-15
+                    departure_time = str(departure_hrs)+":"+str(departure_min)
+            else:
+                if int(train["arrival_time"].split(':')[1])<55:
+                    departure_time = int(train["arrival_time"].split(':')[1])+5
+                    departure_time = str(train["arrival_time"].split(':')[0])+":"+str(departure_time)
+                else:
+                    departure_hrs = int(train["arrival_time"].split(':')[0])+1
+                    departure_min = int(train["arrival_time"].split(':')[1])-5
+                    departure_time = str(departure_hrs)+":"+str(departure_min)
+            self.tableData.addTrain(TrainInfo(train["code"], train["arrival_time"], departure_time,'4'))
+        
+
     def showAddPlatformDialog(self):
         AddPlatformDialog(self).showDialog()
         return    
@@ -150,9 +215,34 @@ class MainWin(QtGui.QMainWindow):
         self.drawPlatforms(qp)
         self.drawOuterlines(qp)
         
-        for train in trains:
+        for train in trainslist:
             train.draw(qp)
             train.update()
+
+        screen = QtGui.QDesktopWidget().screenGeometry()
+        view = QTableView(self)
+        tableData = TrainTableModel()
+        view.setModel(tableData)
+        view.setGeometry(screen.width()-460,0,460,400)
+        for train in getTrainList().find():
+            if train["type"]=="Originating" or train["type"]=="Destination":
+                if int(train["arrival_time"].split(':')[1])<45:
+                    departure_time = int(train["arrival_time"].split(':')[1])+15
+                    departure_time = str(train["arrival_time"].split(':')[0])+":"+str(departure_time)
+                else:
+                    departure_hrs = int(train["arrival_time"].split(':')[0])+1
+                    departure_min = int(train["arrival_time"].split(':')[1])-15
+                    departure_time = str(departure_hrs)+":"+str(departure_min)
+            else:
+                if int(train["arrival_time"].split(':')[1])<55:
+                    departure_time = int(train["arrival_time"].split(':')[1])+5
+                    departure_time = str(train["arrival_time"].split(':')[0])+":"+str(departure_time)
+                else:
+                    departure_hrs = int(train["arrival_time"].split(':')[0])+1
+                    departure_min = int(train["arrival_time"].split(':')[1])-5
+                    departure_time = str(departure_hrs)+":"+str(departure_min)
+            tableData.addTrain(TrainInfo(train["code"], train["arrival_time"], departure_time,'4'))
+
         self.update()
         QtGui.QApplication.processEvents()
 
@@ -383,11 +473,11 @@ class EditTrainDialog(QtGui.QDialog):
 
 def main():
     app = QtGui.QApplication(sys.argv)
-    for i in range(7):
-        trains.append(Train(1, 2, 3, 4))
-        trains[i].x = 100
-        trains[i].y = i*60 + 260
-        trains[i].vel = 1
+    for i in range(3):
+        trainslist.append(Train(1, 2, 3, 4))
+        trainslist[i].x = 100
+        trainslist[i].y = i*60 + 260
+        trainslist[i].vel = 1
 
     w = MainWin()
     w.show()
