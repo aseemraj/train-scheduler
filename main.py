@@ -1,10 +1,13 @@
-import sys, random
+import sys, random, time
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from train import *
 from traindetails import *
 from db import *
+from platform import *
+from outerline import *
+from time import strftime
 
 trains = []
 
@@ -30,11 +33,24 @@ class MainWin(QtGui.QMainWindow):
         self.center()
 
         # Time slider
-        slider = QtGui.QSlider(1, self)
-        slider.setRange(0, 2359)
-        slider.setSingleStep(10)
-        slider.resize(500, 20)
-        slider.move(200, 57)
+        self.slider = QtGui.QSlider(1, self)
+        self.slider.setRange(10, 100)
+        self.slider.setSingleStep(10)
+        self.slider.resize(500, 20)
+        self.slider.move(200, 57)
+ 
+        #Timer
+        self.timer = QtCore.QTimer(self)
+        self.timer.timeout.connect(lambda: self.Timeset())
+        self.timer.start(1000)
+ 
+        #Timer Display
+        self.time = strftime("%H"+":"+"%M"+":"+"%S")
+        self.timeArray = []
+        self.timeArray = self.time.split(":")
+        self.lcd = QtGui.QLCDNumber(self)
+        self.lcd.display(self.time)
+        self.lcd.setGeometry(300,100,200,70)
 
         # Start button
         sbtn = QtGui.QPushButton('Start Simulation', self)
@@ -89,6 +105,25 @@ class MainWin(QtGui.QMainWindow):
         
         # self.show()
 
+    def Timeset(self):
+        print self.timeArray[2]
+        self.timeArray[2] = int(self.timeArray[2]) + 10*int(self.slider.value())
+        print self.timeArray[2]
+        if int(self.timeArray[2]) >= 60:
+            self.minute = int(self.timeArray[2])
+            self.timeArray[2] = int(self.timeArray[2])%60
+            self.minute = self.minute/60
+            self.timeArray[1] = int(self.timeArray[1]) + self.minute
+            if int(self.timeArray[1]) >= 60:
+                self.hour = int(self.timeArray[1])
+                self.timeArray[1] = int(self.timeArray[1])%60
+                self.hour = self.hour/60
+                self.timeArray[0] = int(self.timeArray[0]) + self.hour
+                if int(self.timeArray[2]) >= 24:
+                    self.timeArray[2] = int(self.timeArray[2])%24
+        self.time = str(self.timeArray[0])+":"+str(self.timeArray[1])+":"+str(self.timeArray[2])  
+        self.lcd.display(self.time)
+
     def showAddTrainDialog(self):
         AddTrainDialog(self).showDialog()
         return
@@ -124,30 +159,24 @@ class MainWin(QtGui.QMainWindow):
         qp.end()
         
     def drawPlatforms(self, qp):
-        color = QtGui.QColor(0, 0, 0)
-        color.setNamedColor('#d4d4d4')
-        qp.setPen(color)
-        for i in range(8):
-            qp.setBrush(QtGui.QColor(50, 50, 50))
-            qp.drawRect(100, 230+i*60, 600, 15)
-            qp.setBrush(QtGui.QColor(20, 20, 20))
-            qp.drawRect(100, 230+i*60+15, 600, 15)
-            qbtn = QtGui.QPushButton('Disable', self)
-            qbtn.setToolTip('Quit Application')
-            qbtn.resize(qbtn.sizeHint())
-            qbtn.clicked.connect(QtCore.QCoreApplication.instance().quit)
-            qbtn.move(700, 230+i*60)
+        Platforms = []
+        for i in range(16):
+            platform = Platform(i)
+            platform.draw(qp)
+            Platforms.append(platform)
+
 
     def drawOuterlines(self, qp):
-        color = QtGui.QColor(0, 100, 0)
-        color.setNamedColor('#d4d4d4')
-        qp.setPen(color)
+        Outerlines = []
         for i in range(5):
-            qp.setBrush(QtGui.QColor(50, 100, 50))
-            qp.drawRect(50, 130+i*10, 200, 5)
+            outerline = OuterLine(i)
+            outerline.draw(qp)
+            Outerlines.append(outerline)
+
         for i in range(5):
-            qp.setBrush(QtGui.QColor(50, 100, 50))
-            qp.drawRect(550, 130+i*10, 200, 5)
+            outerline = OuterLine(i+5)
+            outerline.draw(qp)
+            Outerlines.append(outerline)
 
     def drawText(self, event, qp):
         qp.setPen(QtGui.QColor(168, 34, 3))
