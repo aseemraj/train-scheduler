@@ -166,7 +166,7 @@ class AddTrainDialog(QtGui.QDialog):
         
         temptrain = Train(1, 2, 3, 4)
         temptrain.x = 100
-        temptrain.y = (len(trainslist)+2)*60 + 260
+        temptrain.y = len(trainslist)*60 + 260
         temptrain.vel = 1
         trainslist.append(temptrain)
 
