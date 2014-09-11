@@ -4,64 +4,20 @@ from PyQt4.QtGui import *
 import math
 from db import *
 from train import *
+from main import *
 
 trainslist = []
 
-class TrainInfo(object):
-    """Name of the train along with his trainCode, Arrival Time Departure Time"""
-    def __init__(self,trainCode,arrivalTime,departureTime,platformNo):
-        self.trainCode = trainCode
-        self.arrivalTime = arrivalTime
-        self.departureTime = departureTime
-        self.platformNo = platformNo
-
-class TrainTableModel(QtCore.QAbstractTableModel):
-    """Model class that drives the population of tabular display"""
-    def __init__(self):
-        super(TrainTableModel,self).__init__()
-        self.headers = ['Code','Arrival','Departure','Pf']
-        self.train  = []
- 
-    def rowCount(self,index=QtCore.QModelIndex()):
-        return len(self.train)
- 
-    def addTrain(self,train):
-        self.beginResetModel()
-        self.train.append(train)
-        self.endResetModel()
- 
-    def columnCount(self,index=QtCore.QModelIndex()):
-        return len(self.headers)
- 
-    def data(self,index,role=Qt.DisplayRole):
-        col = index.column()
-        train = self.train[index.row()]
-        if role == Qt.DisplayRole:
-            if col == 0:
-                return QVariant(train.trainCode)
-            elif col == 1:
-                return QVariant(train.arrivalTime)
-            elif col == 2:
-                return QVariant(train.departureTime)
-            elif col == 3:
-                return QVariant(train.platformNo)
-            return QVariant()
- 
-    def headerData(self,section,orientation,role=Qt.DisplayRole):
-        if role != Qt.DisplayRole:
-            return QVariant()
- 
-        if orientation == Qt.Horizontal:
-            return QVariant(self.headers[section])
-        return QVariant(int(section + 1))
-
 class AddTrainDialog(QtGui.QDialog):
 
+    updateTrain = QtCore.pyqtSignal()
     def __init__(self, parent=None):
 
         super(AddTrainDialog,self).__init__(parent)
 
         self.layout = QtGui.QFormLayout(self)
+
+        self.updateTrain.connect(lambda: MainWin().editTrainList())
 
         self.trainNumber = QtGui.QLineEdit()
         self.trainName = QtGui.QLineEdit()
@@ -171,7 +127,8 @@ class AddTrainDialog(QtGui.QDialog):
         trainslist.append(temptrain)
 
         QtGui.QDialog.accept(self)
-        self.update()
+        self.updateTrain.emit()
+
         QtGui.QApplication.processEvents()
         return
 

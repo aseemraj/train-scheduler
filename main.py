@@ -6,6 +6,55 @@ from train import *
 from traindetails import *
 from db import *
 
+class TrainInfo(object):
+    """Name of the train along with his trainCode, Arrival Time Departure Time"""
+    def __init__(self,trainCode,arrivalTime,departureTime,platformNo):
+        self.trainCode = trainCode
+        self.arrivalTime = arrivalTime
+        self.departureTime = departureTime
+        self.platformNo = platformNo
+
+class TrainTableModel(QtCore.QAbstractTableModel):
+    """Model class that drives the population of tabular display"""
+    def __init__(self):
+        super(TrainTableModel,self).__init__()
+        self.headers = ['Code','Arrival','Departure','Pf']
+        self.train  = []
+ 
+    def rowCount(self,index=QtCore.QModelIndex()):
+        return len(self.train)
+ 
+    def addTrain(self,train):
+        self.beginResetModel()
+        self.train.append(train)
+        self.endResetModel()
+ 
+    def columnCount(self,index=QtCore.QModelIndex()):
+        return len(self.headers)
+ 
+    def data(self,index,role=Qt.DisplayRole):
+        col = index.column()
+        train = self.train[index.row()]
+        if role == Qt.DisplayRole:
+            if col == 0:
+                return QVariant(train.trainCode)
+            elif col == 1:
+                return QVariant(train.arrivalTime)
+            elif col == 2:
+                return QVariant(train.departureTime)
+            elif col == 3:
+                return QVariant(train.platformNo)
+            return QVariant()
+ 
+    def headerData(self,section,orientation,role=Qt.DisplayRole):
+        if role != Qt.DisplayRole:
+            return QVariant()
+ 
+        if orientation == Qt.Horizontal:
+            return QVariant(self.headers[section])
+        return QVariant(int(section + 1))
+
+
 class MainWin(QtGui.QMainWindow):
     
     def __init__(self):
@@ -69,11 +118,26 @@ class MainWin(QtGui.QMainWindow):
 
 
         #Adding Train To Table
-        view = QTableView(self)
-        tableData = TrainTableModel()
-        view.setModel(tableData)
-        view.setGeometry(screen.width()-460,0,460,400)
+        self.view = QTableView(self)
+        self.tableData = TrainTableModel()
+        self.view.setModel(self.tableData)
+        self.view.setGeometry(screen.width()-460,0,460,400)
+        self.editTrainList()
+
+        # Platform labels
+        it = 0
+        while it<16:
+            lbl = QtGui.QLabel('PF '+str(it+1)+'/'+str(it+2), self)
+            lbl.move(30, 230+it*30)
+            it = it+2
         
+        # self.show()
+
+    def showAddTrainDialog(self):
+        AddTrainDialog(self).showDialog()
+        return
+
+    def editTrainList(self):
         for train in getTrainList().find():
             if train["type"]=="Originating" or train["type"]=="Destination":
                 if int(train["arrival_time"].split(':')[1])<45:
@@ -91,21 +155,8 @@ class MainWin(QtGui.QMainWindow):
                     departure_hrs = int(train["arrival_time"].split(':')[0])+1
                     departure_min = int(train["arrival_time"].split(':')[1])-5
                     departure_time = str(departure_hrs)+":"+str(departure_min)
-            tableData.addTrain(TrainInfo(train["code"], train["arrival_time"], departure_time,'4'))
+            self.tableData.addTrain(TrainInfo(train["code"], train["arrival_time"], departure_time,'4'))
         
-
-        # Platform labels
-        it = 0
-        while it<16:
-            lbl = QtGui.QLabel('PF '+str(it+1)+'/'+str(it+2), self)
-            lbl.move(30, 230+it*30)
-            it = it+2
-        
-        # self.show()
-
-    def showAddTrainDialog(self):
-        AddTrainDialog(self).showDialog()
-        return
 
     def showAddPlatformDialog(self):
         AddPlatformDialog(self).showDialog()
