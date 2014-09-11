@@ -3,6 +3,9 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import math
 from db import *
+from train import *
+
+trainslist = []
 
 class TrainInfo(object):
     """Name of the train along with his trainCode, Arrival Time Departure Time"""
@@ -160,8 +163,16 @@ class AddTrainDialog(QtGui.QDialog):
             addTrain(inputTrainName,inputTrainNumber,inputTimeString,inputTrainToDirection,"NOT_ARRIVED",inputTrainType)
         else:
             addTrain(inputTrainName,inputTrainNumber,inputTimeString,inputTrainFromDirection,"NOT_ARRIVED",inputTrainType)
+        
+        temptrain = Train(1, 2, 3, 4)
+        temptrain.x = 100
+        temptrain.y = (len(trainslist)+2)*60 + 260
+        temptrain.vel = 1
+        trainslist.append(temptrain)
 
         QtGui.QDialog.accept(self)
+        self.update()
+        QtGui.QApplication.processEvents()
         return
 
     def buttonClickedCancel(self):

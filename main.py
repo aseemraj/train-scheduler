@@ -6,8 +6,6 @@ from train import *
 from traindetails import *
 from db import *
 
-trains = []
-
 class MainWin(QtGui.QMainWindow):
     
     def __init__(self):
@@ -95,6 +93,7 @@ class MainWin(QtGui.QMainWindow):
                     departure_time = str(departure_hrs)+":"+str(departure_min)
             tableData.addTrain(TrainInfo(train["code"], train["arrival_time"], departure_time,'4'))
         
+
         # Platform labels
         it = 0
         while it<16:
@@ -130,9 +129,34 @@ class MainWin(QtGui.QMainWindow):
         self.drawPlatforms(qp)
         self.drawOuterlines(qp)
         
-        for train in trains:
+        for train in trainslist:
             train.draw(qp)
             train.update()
+
+        screen = QtGui.QDesktopWidget().screenGeometry()
+        view = QTableView(self)
+        tableData = TrainTableModel()
+        view.setModel(tableData)
+        view.setGeometry(screen.width()-460,0,460,400)
+        for train in getTrainList().find():
+            if train["type"]=="Originating" or train["type"]=="Destination":
+                if int(train["arrival_time"].split(':')[1])<45:
+                    departure_time = int(train["arrival_time"].split(':')[1])+15
+                    departure_time = str(train["arrival_time"].split(':')[0])+":"+str(departure_time)
+                else:
+                    departure_hrs = int(train["arrival_time"].split(':')[0])+1
+                    departure_min = int(train["arrival_time"].split(':')[1])-15
+                    departure_time = str(departure_hrs)+":"+str(departure_min)
+            else:
+                if int(train["arrival_time"].split(':')[1])<55:
+                    departure_time = int(train["arrival_time"].split(':')[1])+5
+                    departure_time = str(train["arrival_time"].split(':')[0])+":"+str(departure_time)
+                else:
+                    departure_hrs = int(train["arrival_time"].split(':')[0])+1
+                    departure_min = int(train["arrival_time"].split(':')[1])-5
+                    departure_time = str(departure_hrs)+":"+str(departure_min)
+            tableData.addTrain(TrainInfo(train["code"], train["arrival_time"], departure_time,'4'))
+
         self.update()
         QtGui.QApplication.processEvents()
 
@@ -369,11 +393,11 @@ class EditTrainDialog(QtGui.QDialog):
 
 def main():
     app = QtGui.QApplication(sys.argv)
-    for i in range(7):
-        trains.append(Train(1, 2, 3, 4))
-        trains[i].x = 100
-        trains[i].y = i*60 + 260
-        trains[i].vel = 1
+    for i in range(3):
+        trainslist.append(Train(1, 2, 3, 4))
+        trainslist[i].x = 100
+        trainslist[i].y = i*60 + 260
+        trainslist[i].vel = 1
 
     w = MainWin()
     w.show()
