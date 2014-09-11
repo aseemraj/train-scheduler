@@ -150,7 +150,6 @@ class MainWin(QtGui.QMainWindow):
             qp.drawRect(550, 130+i*10, 200, 5)
 
     def drawText(self, event, qp):
-      
         qp.setPen(QtGui.QColor(168, 34, 3))
         qp.setFont(QtGui.QFont('Decorative', 10))
         qp.drawText(event.rect(), QtCore.Qt.AlignCenter, self.text)
