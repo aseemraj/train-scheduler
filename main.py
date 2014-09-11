@@ -3,11 +3,8 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from train import *
-<<<<<<< HEAD
 from traindetails import *
-=======
 from db import *
->>>>>>> 34a608df06ad097fdbe1e32eaca30c9dfd3e570b
 
 trains = []
 
