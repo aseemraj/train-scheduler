@@ -75,11 +75,26 @@ class MainWin(QtGui.QMainWindow):
         tableData = TrainTableModel()
         view.setModel(tableData)
         view.setGeometry(screen.width()-460,0,460,400)
- 
-        tableData.addTrain(TrainInfo('12480', '11:00', '11:10','4'))
-        tableData.addTrain(TrainInfo('12621', '20:10', '20:30','3'))
-        tableData.addTrain(TrainInfo('12480', '21:35', '21:40','6'))
-
+        
+        for train in getTrainList().find():
+            if train["type"]=="Originating" or train["type"]=="Destination":
+                if int(train["arrival_time"].split(':')[1])<45:
+                    departure_time = int(train["arrival_time"].split(':')[1])+15
+                    departure_time = str(train["arrival_time"].split(':')[0])+":"+str(departure_time)
+                else:
+                    departure_hrs = int(train["arrival_time"].split(':')[0])+1
+                    departure_min = int(train["arrival_time"].split(':')[1])-15
+                    departure_time = str(departure_hrs)+":"+str(departure_min)
+            else:
+                if int(train["arrival_time"].split(':')[1])<55:
+                    departure_time = int(train["arrival_time"].split(':')[1])+5
+                    departure_time = str(train["arrival_time"].split(':')[0])+":"+str(departure_time)
+                else:
+                    departure_hrs = int(train["arrival_time"].split(':')[0])+1
+                    departure_min = int(train["arrival_time"].split(':')[1])-5
+                    departure_time = str(departure_hrs)+":"+str(departure_min)
+            tableData.addTrain(TrainInfo(train["code"], train["arrival_time"], departure_time,'4'))
+        
         # Platform labels
         it = 0
         while it<16:
