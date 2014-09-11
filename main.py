@@ -150,9 +150,7 @@ class MainWin(QtGui.QMainWindow):
         # self.show()
 
     def Timeset(self):
-        print self.timeArray[2]
         self.timeArray[2] = int(self.timeArray[2]) + 10*int(self.slider.value())
-        print self.timeArray[2]
         if int(self.timeArray[2]) >= 60:
             self.minute = int(self.timeArray[2])
             self.timeArray[2] = int(self.timeArray[2])%60
@@ -165,7 +163,7 @@ class MainWin(QtGui.QMainWindow):
                 self.timeArray[0] = int(self.timeArray[0]) + self.hour
                 if int(self.timeArray[2]) >= 24:
                     self.timeArray[2] = int(self.timeArray[2])%24
-        self.time = str(self.timeArray[0])+":"+str(self.timeArray[1])+":"+str(self.timeArray[2])  
+        self.time = str(self.timeArray[0])+":"+str(self.timeArray[1])  
         self.lcd.display(self.time)
 
     def showAddTrainDialog(self):
