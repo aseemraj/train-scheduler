@@ -1,10 +1,12 @@
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+import math
 
 trainwidth = 12
 trainlength = 500
-bogielength = trainlength/20
+bogies = 20
+bogielength = trainlength/bogies
 
 class Train(object):
     """Name of the train along with his trainCode, Arrival Time Departure Time"""
@@ -16,7 +18,8 @@ class Train(object):
         self.vel = 0
         self.x = 0
         self.y = 0
-        self.bogies = 20
+        self.bogies = bogies
+        self.tempi = 0
 
     def draw(self, qp):
         for i in range(self.bogies):
@@ -29,7 +32,10 @@ class Train(object):
 
     def update(self):
         """ Called each frame. """
+        self.x += self.vel
+        print "updating ", self.tempi
+        self.tempi += 1
         if self.vel>0:
-            self.bogies = 20 - (self.x+100)/bogielength
-        elif self.vel<0:
-            self.bogies = 20 - (self.x+100)/bogielength
+            self.bogies = int(bogies + 1 - math.ceil((self.x-200)/bogielength))
+        # elif self.vel<0:
+        #     self.bogies = 20 - (self.x+100)/bogielength
