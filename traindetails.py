@@ -2,6 +2,7 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import math
+from db import *
 
 class TrainInfo(object):
     """Name of the train along with his trainCode, Arrival Time Departure Time"""
@@ -135,20 +136,31 @@ class AddTrainDialog(QtGui.QDialog):
 
     def buttonClickedOk(self):
 
-        '''
-        inputTrainNumber = self.trainNumber.text()
-        inputTrainName = self.trainName.text()
-        inputTrainType = self.trainType.currentText()
-        inputTrainFromDirection = self.trainFromDirection.currentText()
-        inputTrainToDirection = self.trainToDirection.currentText()
+        inputTrainNumber = str(self.trainNumber.text())
+        inputTrainName = str(self.trainName.text())
+        inputTrainType = str(self.trainType.currentText())
+        inputTrainFromDirection = str(self.trainFromDirection.currentText())
+        inputTrainToDirection = str(self.trainToDirection.currentText())
 
-        inputTime = self.trainArrival.dateTime()
+        inputTime = self.trainArrival.time()
         inputHour = inputTime.hour()
         inputMinute = inputTime.minute()
-        <<<< Make a string out of this! >>>>
 
-        <<<< Add all these details into the database! >>>>
-        '''
+        inputHourString = str(inputHour)
+        if inputHour<10:
+            inputHourString = "0" + inputHourString
+
+        inputMinuteString = str(inputMinute)
+        if inputMinute<10:
+            inputMinuteString = "0"+inputMinuteString
+
+        inputTimeString = inputHourString + ":" + inputMinuteString
+
+        if inputTrainFromDirection=="<NA>":
+            addTrain(inputTrainName,inputTrainNumber,inputTimeString,inputTrainToDirection,"NOT_ARRIVED",inputTrainType)
+        else:
+            addTrain(inputTrainName,inputTrainNumber,inputTimeString,inputTrainFromDirection,"NOT_ARRIVED",inputTrainType)
+
         QtGui.QDialog.accept(self)
         return
 
@@ -166,14 +178,11 @@ class DeleteTrainDialog(QtGui.QDialog):
         self.layout = QtGui.QFormLayout(self)
 
         self.dropDownList = QtGui.QComboBox()
-        self.trainList = ["12480","12481","12484"]
-        self.dropDownList.addItems(self.trainList)
+        self.trainList = []
+        for train in getTrainList().find():
+            self.trainList.append(train["code"])
 
-        '''
-        dropDownList = []
-        for trainNum in train:
-            dropDownList.append(trainNum)
-        '''
+        self.dropDownList.addItems(self.trainList)
 
         self.buttonBox = QtGui.QDialogButtonBox()
         self.buttonOk = self.buttonBox.addButton("Delete Train",QtGui.QDialogButtonBox.AcceptRole)
@@ -192,7 +201,7 @@ class DeleteTrainDialog(QtGui.QDialog):
         return
 
     def buttonClickedOk(self):
-        #Do something useful!
+        deleteTrain(str(self.dropDownList.currentText()))
         QtGui.QDialog.accept(self)
         return
 
