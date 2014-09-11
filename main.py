@@ -309,7 +309,16 @@ class AddTrainDialog(QtGui.QDialog):
         inputTime = self.trainArrival.time()
         inputHour = inputTime.hour()
         inputMinute = inputTime.minute()
-        inputTimeString = str(inputHour) + ":" + str(inputMinute)
+
+        inputHourString = str(inputHour)
+        if inputHour<10:
+            inputHourString = "0" + inputHourString
+
+        inputMinuteString = str(inputMinute)
+        if inputMinute<10:
+            inputMinuteString = "0"+inputMinuteString
+
+        inputTimeString = inputHourString + ":" + inputMinuteString
 
         if inputTrainFromDirection=="<NA>":
             addTrain(inputTrainName,inputTrainNumber,inputTimeString,inputTrainToDirection,"NOT_ARRIVED",inputTrainType)
@@ -333,14 +342,11 @@ class DeleteTrainDialog(QtGui.QDialog):
         self.layout = QtGui.QFormLayout(self)
 
         self.dropDownList = QtGui.QComboBox()
-        self.trainList = ["12480","12481","12484"]
-        self.dropDownList.addItems(self.trainList)
+        self.trainList = []
+        for train in getTrainList().find():
+            self.trainList.append(train["code"])
 
-        '''
-        dropDownList = []
-        for trainNum in train:
-            dropDownList.append(trainNum)
-        '''
+        self.dropDownList.addItems(self.trainList)
 
         self.buttonBox = QtGui.QDialogButtonBox()
         self.buttonOk = self.buttonBox.addButton("Delete Train",QtGui.QDialogButtonBox.AcceptRole)
@@ -359,7 +365,7 @@ class DeleteTrainDialog(QtGui.QDialog):
         return
 
     def buttonClickedOk(self):
-        #Do something useful!
+        deleteTrain(str(self.dropDownList.currentText()))
         QtGui.QDialog.accept(self)
         return
 
@@ -376,7 +382,7 @@ class AddPlatformDialog(QtGui.QDialog):
 
         self.layout = QtGui.QFormLayout(self)
 
-        platformNumber = QtGui.QLineEdit()
+        self.platformNumber = QtGui.QLineEdit()
 
         self.buttonBox = QtGui.QDialogButtonBox()
         self.buttonOk = self.buttonBox.addButton("Add Platform(s)",QtGui.QDialogButtonBox.AcceptRole)
@@ -395,10 +401,13 @@ class AddPlatformDialog(QtGui.QDialog):
         return
 
     def buttonClickedOk(self):
-        '''
-        inputPlatformNumber = self.platformNumber.text()
-        <<<< Add Platforms to database >>>>
-        '''
+        platformCount = 0
+        for platform in platforms.find():
+            platformCount = platformCount + 1
+
+        for i in range(1,int(self.platformNumber.text())+1):
+            addPlatform(i+platformCount,"ENABLED","EMPTY","0")
+
         QtGui.QDialog.accept(self)
         return
 
@@ -414,10 +423,19 @@ class EditPlatformDialog(QtGui.QDialog):
 
         self.layout = QtGui.QFormLayout(self)
 
+        platformCount = 0
+        for platform in platforms.find():
+            platformCount = platformCount + 1
+
         self.platformList = []
-        for i in range(1,17):
+        
+        for i in range(1,platformCount+1):
             self.platformList.append(QtGui.QCheckBox("Platform "+str(i)))
             self.layout.addRow(self.platformList[i-1])
+
+        for platform in platforms.find():
+            if platform["status"]=="DISABLED":
+                self.platformList[int(platform["number"])-1].setChecked(True)
 
         self.buttonBox = QtGui.QDialogButtonBox()
         self.buttonOk = self.buttonBox.addButton("Make Changes",QtGui.QDialogButtonBox.AcceptRole)
@@ -435,7 +453,17 @@ class EditPlatformDialog(QtGui.QDialog):
         return
 
     def buttonClickedOk(self):
-        #Do something useful!
+        # SOME PROBLEMS HERE!!!
+        ######################
+        i = 1
+        for checkBox in self.platformList:
+            if checkBox.isChecked():
+                print i
+                updatePlatformStatus(i,"DISABLED")
+            else:
+                updatePlatformStatus(i,"ENABLED")
+            i=i+1
+
         QtGui.QDialog.accept(self)
         return
 
@@ -453,36 +481,17 @@ class EditTrainDialog(QtGui.QDialog):
         self.layout = QtGui.QFormLayout(self)
         self.trainNumber = QtGui.QComboBox()
 
-        '''
+        
         self.trainNumberList = []
-        for train in trains:
-            self.trainNumberList.append(train.number)
+        for train in getTrainList().find():
+            self.trainNumberList.append(train["code"])
 
         self.trainNumber.addItems(self.trainNumberList)
         self.trainNumber.setCurrentIndex(0)
 
         self.trainNumber.activated[int].connect(self.trainNumberSelect)
-        '''
-        
 
-        self.trainName = QtGui.QLineEdit()
         self.trainArrival = QtGui.QTimeEdit()
-
-        self.trainType = QtGui.QComboBox()
-        self.trainTypeList = ["Originating","Destination","Passing"]
-        self.trainType.addItems(self.trainTypeList)
-
-
-        self.trainToDirection = QtGui.QComboBox()
-        self.trainFromDirection = QtGui.QComboBox()
-        self.trainDirectionList = ["<NA>","West","East"]
-        self.trainToDirection.addItems(self.trainDirectionList)
-        self.trainFromDirection.addItems(self.trainDirectionList)
-
-        self.trainType.activated[int].connect(self.trainTypeInput)
-        self.trainFromDirection.activated[int].connect(self.trainFromDirectionInput)
-        self.trainToDirection.activated[int].connect(self.trainToDirectionInput)
-
 
         self.buttonBox = QtGui.QDialogButtonBox()
 
@@ -492,11 +501,7 @@ class EditTrainDialog(QtGui.QDialog):
         self.buttonCancel.clicked.connect(lambda: self.buttonClickedCancel())
         self.buttonBox.centerButtons()
 
-        self.layout.addRow("Train Number",self.trainNumber)
-        self.layout.addRow("Train Name",self.trainName)
-        self.layout.addRow("Train Type",self.trainType)
-        self.layout.addRow("Arriving From",self.trainFromDirection)
-        self.layout.addRow("Departing Towards",self.trainToDirection)
+        self.layout.addRow("Train Number", self.trainNumber)
         self.layout.addRow("Arrival Time",self.trainArrival)
         self.layout.addRow(self.buttonBox)
 
@@ -507,60 +512,39 @@ class EditTrainDialog(QtGui.QDialog):
         return
 
     def trainNumberSelect(self,index):
-        '''
-        Set all remaining fields with INDEX's details
-        '''
-        return
-
-    def trainTypeInput(self, index):
-        if index==0:
-            self.trainFromDirection.setEnabled(False)
-            self.trainFromDirection.setCurrentIndex(0)
-            self.trainToDirection.setEnabled(True)
-        
-        if index==1:
-            self.trainToDirection.setEnabled(False)
-            self.trainToDirection.setCurrentIndex(0)
-            self.trainFromDirection.setEnabled(True)
-
-        if index==2:
-            self.trainFromDirection.setEnabled(True)
-            self.trainToDirection.setEnabled(True)
+        for train in getTrainList().find():
+            if train["code"]==str(self.trainNumber.currentText()):
+                trainTimeString = train["arrival_time"]
+                splitTimeString = trainTimeString.split(':')
+                timeHour = int(splitTimeString[0])
+                timeMinute = int(splitTimeString[1])
+                self.trainArrival.setTime(QtCore.QTime(timeHour,timeMinute))
 
         return
 
-    def trainFromDirectionInput(self, index):
-        if self.trainToDirection.isEnabled():
-            if index==1:
-                self.trainToDirection.setCurrentIndex(2)
-            elif index==2:
-                self.trainToDirection.setCurrentIndex(1)
-        return
-
-    def trainToDirectionInput(self, index):
-        if self.trainFromDirection.isEnabled():
-            if index==1:
-                self.trainFromDirection.setCurrentIndex(2)
-            elif index==2:
-                self.trainFromDirection.setCurrentIndex(1)
-        return
-
+    
     def buttonClickedOk(self):
 
-        '''
-        inputTrainNumber = self.trainNumber.currentText()
-        inputTrainName = self.trainName.text()
-        inputTrainType = self.trainType.currentText()
-        inputTrainFromDirection = self.trainFromDirection.currentText()
-        inputTrainToDirection = self.trainToDirection.currentText()
-
-        inputTime = self.trainArrival.dateTime()
+        inputTime = self.trainArrival.time()
         inputHour = inputTime.hour()
         inputMinute = inputTime.minute()
-        <<<< Make a string out of this! >>>>
 
-        <<<< Add all these details into the database! >>>>
-        '''
+        inputHourString = str(inputHour)
+        if inputHour<10:
+            inputHourString = "0" + inputHourString
+
+        inputMinuteString = str(inputMinute)
+        if inputMinute<10:
+            inputMinuteString = "0"+inputMinuteString
+
+        inputTimeString = inputHourString + ":" + inputMinuteString
+        print self.trainNumber
+        print type(self.trainNumber)
+        print str(self.trainNumber.currentText())
+        print inputTimeString
+
+        updateTrainArrivalTime(str(self.trainNumber.currentText()),inputTimeString)
+
         QtGui.QDialog.accept(self)
         return
 
