@@ -50,3 +50,6 @@ def addOuterLines(number,occupancy,code):
 
 def updateOuterLines(number,occupancy):
     outer_lines.update({"number":number},{'$set':{"occupancy":occupancy}})
+
+def getOuterLineList():
+    return outer_lines
