@@ -16,7 +16,7 @@ class Scheduler():
 
 		self.trainSchedule = []
 		for train in getTrainList().find():
-			self.trainSchedule.append({"Code": train["code"],"Direction": train["direction"], "Type": train["type"], "Status": train["status"], "Scheduled_Arrival_Time": train["arrival_time"], "Platform_Arrival_Time": train["arrival_time"], "IsWaiting": False, "WaitLocation": 0, "WaitTime": 0, "PlatformNumber": 0, "PlatformTime": 0})
+			self.trainSchedule.append({"Code": train["code"],"Direction": train["direction"], "Type": train["type"], "Status": train["status"], "Scheduled_Arrival_Time": train["arrival_time"], "Platform_Arrival_Time": train["arrival_time"], "IsWaiting": False, "WaitLocation": "0", "WaitTime": "0", "PlatformNumber": "0", "PlatformTime": "0"})
 
 		self.platformSchedule = []
 		for platform in getPlatformList().find():
@@ -25,10 +25,11 @@ class Scheduler():
 		self.sideLineSchedule = []
 		for i in range (1,11):
 			if i<6:
-				print ("SideLine " + str(i))
-				self.sideLineSchedule.append({"Number": i, "Occupancy": "EMPTY", "Code": "0", "Location": "LEFT"})
+				self.sideLineSchedule.append({"Number": str(i), "Occupancy": "EMPTY", "Code": "0", "Location": "LEFT"})
 			else:
-				self.sideLineSchedule.append({"Number": i, "Occupancy": "EMPTY", "Code": "0", "Location": "RIGHT"})
+				self.sideLineSchedule.append({"Number": str(i), "Occupancy": "EMPTY", "Code": "0", "Location": "RIGHT"})
+
+
 
 
 		for train in self.trainSchedule:
@@ -37,8 +38,7 @@ class Scheduler():
 			else:
 				train["PlatformTime"] = 15
 
-		# for train in self.trainSchedule:
-		# 	print self.timeToInt(train["Scheduled_Arrival_Time"])
+
 
 
 
@@ -58,17 +58,17 @@ class Scheduler():
 			if train["Status"]=="ON_PLATFORM":
 				currentTrain = self.getTrain(train["Code"])
 
-				if train["PlatformTime"]==0:
+				if train["PlatformTime"]=="0":
 					currentPlatform = self.getPlatform(train["PlatformNumber"])
 
-					print ("Train " + currentTrain["Code"] + " leaves Platform " + currentPlatform["Number"])
+					# print ("Train " + currentTrain["Code"] + " leaves Platform " + currentPlatform["Number"])
 
 					currentTrain["Status"] = "DEPARTED"
 
-					currentPlatform["Code"] = 0
+					currentPlatform["Code"] = "0"
 					currentPlatform["Occupancy"] = "EMPTY"
 				else:
-					currentTrain["PlatformTime"] = currentTrain["PlatformTime"] - 1
+					currentTrain["PlatformTime"] = str(int(currentTrain["PlatformTime"]) - 1)
 
 
 	def schedulingWaitingTrains(self):
@@ -77,6 +77,7 @@ class Scheduler():
 
 			if train["Status"]=="WAITING":
 				waitingList.append(self.getTrain(train["Code"]))
+				print train["Code"]
 
 		waitingList = sorted(waitingList, key=lambda k: self.timeToInt(k["Scheduled_Arrival_Time"]))
 		waitCount = 0
@@ -85,8 +86,9 @@ class Scheduler():
 				currentTrain = self.getTrain(waitingList[waitCount]["Code"])
 				currentPlatform = self.getPlatform(platform["Number"])
 				currentSideLine = self.getSideLine(waitingList[waitCount]["WaitLocation"])
+				# print currentSideLine
 
-				print ("Train " + currentTrain["Code"] + "left SideLine " + currentSideLine["Number"] + " for Platform " + currentPlatform["Number"])
+				# print ("Train " + currentTrain["Code"] + "left SideLine " + currentSideLine["Number"] + " for Platform " + currentPlatform["Number"])
 
 				currentTrain["Status"] = "ON_PLATFORM"
 				currentTrain["PlatformNumber"] = currentPlatform["Number"]
@@ -96,17 +98,15 @@ class Scheduler():
 				currentPlatform["Code"] = currentTrain["Code"]
 
 				currentSideLine["Occupancy"] = "EMPTY"
-				currentSideLine["Code"] = 0
+				currentSideLine["Code"] = "0"
 
 				waitCount = waitCount + 1
 
 		
 		while waitCount<len(waitingList):
 			currentTrain = self.getTrain(waitingList[waitCount]["Code"])
-			currentTrain["WaitTime"] = currentTrain["WaitTime"] + 1
+			currentTrain["WaitTime"] = str(int(currentTrain["WaitTime"]) + 1)
 			waitCount = waitCount + 1
-
-		
 
 
 
@@ -123,7 +123,7 @@ class Scheduler():
 		sideLineCount = 0
 		incomingCount = 0
 
-		for platform in platformSchedule:
+		for platform in self.platformSchedule:
 			if platform["Occupancy"]=="EMPTY" and platform["Status"]=="ENABLED" and incomingCount<len(incomingList):
 				currentTrain = self.getTrain(incomingList[incomingCount]["Code"])
 				currentPlatform = self.getPlatform(platform["Number"])
@@ -137,7 +137,7 @@ class Scheduler():
 
 				incomingCount = incomingCount + 1
 
-		for sideLine in sideLineSchedule:
+		for sideLine in self.sideLineSchedule:
 			if sideLine["Occupancy"]=="EMPTY" and incomingCount<len(incomingList):
 				currentTrain = self.getTrain(incomingList[incomingCount]["Code"])
 				currentSideLine = self.getSideLine(sideline["Number"])
@@ -149,9 +149,6 @@ class Scheduler():
 				currentSideLine["Code"] = currentTrain["Code"]
 
 				incomingCount = incomingCount + 1
-
-
-
 
 
 	def getTrain(self,code):
@@ -174,11 +171,19 @@ class Scheduler():
 		return(60*int(timeList[0]) + int(timeList[1]))
 
 	def intToTime(self,timeInt):
-		return(str(int(timeInt/60)) + ":" + str(timeInt%60))
+		hour  = str(int(timeInt/60))
+		if int(hour)<10:
+			hour = "0" + hour
+
+		minute = str(int(timeInt%60))
+		if int(minute)<10:
+			minute = "0" + minute
+
+		return(hour + ":" + minute)
+
 
 sch = Scheduler()
 sch.makeSchedule()
-
 print sch.trainSchedule
 
 		
