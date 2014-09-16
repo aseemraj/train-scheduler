@@ -2,17 +2,14 @@ import sys, random, time
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-<<<<<<< HEAD
 from platform import *
 from outerline import *
-=======
 from train import *
 from traindetails import *
 from db import *
 from platform import *
 from outerline import *
 from time import strftime
->>>>>>> c10cdd5447a8761d89aba6348d48893bfd4b412f
 
 class TrainInfo(object):
     """Name of the train along with his trainCode, Arrival Time Departure Time"""
@@ -252,7 +249,6 @@ class MainWin(QtGui.QMainWindow):
         qp.end()
 
     def drawPlatforms(self, qp):
-<<<<<<< HEAD
     	Platforms = []
     	for i in range(16):
     		platform = Platform(i)
@@ -271,7 +267,7 @@ class MainWin(QtGui.QMainWindow):
     		outerline = OuterLine(i+5)
     		outerline.draw(qp)
     		Outerlines.append(outerline)
-=======
+
         Platforms = []
         for i in range(16):
             platform = Platform(i)
@@ -290,7 +286,6 @@ class MainWin(QtGui.QMainWindow):
             outerline = OuterLine(i+5)
             outerline.draw(qp)
             Outerlines.append(outerline)
->>>>>>> c10cdd5447a8761d89aba6348d48893bfd4b412f
 
     def drawText(self, event, qp):
         qp.setPen(QtGui.QColor(168, 34, 3))
@@ -304,7 +299,7 @@ class MainWin(QtGui.QMainWindow):
         if reply == QtGui.QMessageBox.Yes:
             event.accept()
         else:
-            event.ignore()f
+            event.ignore()
 
     def center(self):
         qr = self.frameGeometry()
@@ -312,13 +307,7 @@ class MainWin(QtGui.QMainWindow):
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
-
-<<<<<<< HEAD
-
-class AddTrainDialog(QtGui.QDialog):
-=======
 class AddPlatformDialog(QtGui.QDialog):
->>>>>>> c10cdd5447a8761d89aba6348d48893bfd4b412f
 
     def __init__(self, parent=None):
 
