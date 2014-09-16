@@ -2,6 +2,8 @@ import sys, random
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from platform import *
+from outerline import *
 
 class TrainInfo(object):
     """Name of the train along with his trainCode, Arrival Time Departure Time"""
@@ -150,32 +152,26 @@ class MainWin(QtGui.QMainWindow):
         self.drawPlatforms(qp)
         self.drawOuterlines(qp)
         qp.end()
-        
+
     def drawPlatforms(self, qp):
-        color = QtGui.QColor(0, 0, 0)
-        color.setNamedColor('#d4d4d4')
-        qp.setPen(color)
-        for i in range(8):
-            qp.setBrush(QtGui.QColor(50, 50, 50))
-            qp.drawRect(100, 230+i*60, 600, 15)
-            qp.setBrush(QtGui.QColor(20, 20, 20))
-            qp.drawRect(100, 230+i*60+15, 600, 15)
-            qbtn = QtGui.QPushButton('Disable', self)
-            qbtn.setToolTip('Quit Application')
-            qbtn.resize(qbtn.sizeHint())
-            qbtn.clicked.connect(QtCore.QCoreApplication.instance().quit)
-            qbtn.move(700, 230+i*60)
+    	Platforms = []
+    	for i in range(16):
+    		platform = Platform(i)
+    		platform.draw(qp)
+    		Platforms.append(platform)
+
 
     def drawOuterlines(self, qp):
-        color = QtGui.QColor(0, 100, 0)
-        color.setNamedColor('#d4d4d4')
-        qp.setPen(color)
-        for i in range(5):
-            qp.setBrush(QtGui.QColor(50, 100, 50))
-            qp.drawRect(50, 130+i*10, 200, 5)
-        for i in range(5):
-            qp.setBrush(QtGui.QColor(50, 100, 50))
-            qp.drawRect(550, 130+i*10, 200, 5)
+    	Outerlines = []
+    	for i in range(5):
+    		outerline = OuterLine(i)
+    		outerline.draw(qp)
+    		Outerlines.append(outerline)
+
+    	for i in range(5):
+    		outerline = OuterLine(i+5)
+    		outerline.draw(qp)
+    		Outerlines.append(outerline)
 
     def drawText(self, event, qp):
       
@@ -190,13 +186,15 @@ class MainWin(QtGui.QMainWindow):
         if reply == QtGui.QMessageBox.Yes:
             event.accept()
         else:
-            event.ignore()
+            event.ignore()f
 
     def center(self):
         qr = self.frameGeometry()
         cp = QtGui.QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
+
+
 
 class AddTrainDialog(QtGui.QDialog):
 
